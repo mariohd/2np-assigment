@@ -17,11 +17,11 @@ let createInstance = (problem, index) => {
 		activity.toString = () => `${name} - (${start}, ${end})`;
 		return activity;
 	};
-	let instance = {index, activities: [] };
+	let instance = { index, activities: [] };
 	let numbers = problem.split(' ');
 	let size = numbers.shift();
 
-	for (var i = 0; i < size * 2; i += 2) {
+	for (let i = 0; i < size * 2; i += 2) {
 		instance.activities.push(
 			createActivity(`A${ (i/2) + 1 }`, numbers[i], numbers[i+1])
 		);
@@ -30,12 +30,32 @@ let createInstance = (problem, index) => {
 	return instance;
 };
 
-let printInstances = (instances) => {
+let printGraphicalInstances = (instances) => {
+
+	let addBorders = (line) => {
+		let changedFirstChar = line.replace(/-/, '|');
+		return changedFirstChar.substring(0, line.length-1) + '|';
+	};
+
 	instances.forEach((instance) => {
 		console.log(`Instance: ${instance.index}`);
-		instance.activities.forEach((activity) => {
-			console.log(`\tActivity: ${ activity.toString() }`);
+		let size = Math.max.apply(Math, instance.activities.map((i) => i.end));
+		let strings = instance.activities.map((activity) => {
+			let emptySpaces = '   '.repeat(activity.start);
+			let ocurring = emptySpaces + '---'.repeat(activity.end - activity.start + 1);
+			let ended =  addBorders(ocurring) + '   '.repeat(size - activity.end);
+			let subtitles = ended + `   ${ activity.toString() } `;
+			return subtitles;
 		});
+		let rule = '';
+		for (let i = 0; i < size + 1; i ++ ) {
+			rule += ` ${ i.toString(32).toUpperCase()} `;
+		}
+
+		strings.push(rule);
+		strings.unshift(rule);
+		strings.forEach((s) => console.log(s));
+		console.log('');
 	});
 };
 
@@ -45,7 +65,7 @@ let startProcess = () => {
 	let lines = fileContent.split('\n');
 	let instancesToSolve = parseInt(lines.shift());
 	let instances = lines.map(createInstance);
-	printInstances(instances);
+	printGraphicalInstances(instances);
 };
 
 startProcess();
