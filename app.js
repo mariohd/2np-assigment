@@ -32,10 +32,7 @@ let createInstance = (problem, index) => {
 
 let printGraphicalInstances = (instances) => {
 
-	let addBorders = (line) => {
-		let changedFirstChar = line.replace(/-/, '|');
-		return changedFirstChar.substring(0, line.length-1) + '|';
-	};
+	let addBorders = (line) => line.replace(/--/, ' |').substring(0, line.length-2) + '|';
 
 	instances.forEach((instance) => {
 		console.log(`Instance: ${instance.index}`);
