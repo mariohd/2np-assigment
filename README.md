@@ -5,7 +5,7 @@
 
 ## Installation
 
-  npm install
+    npm install
 
 ## Running
 
@@ -13,4 +13,5 @@
 
 ## Team
   [Mário Diniz](https://github.com/mariohd)
+  
   [Jonas Luz](https://github.com/jonasluz)
