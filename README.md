@@ -12,5 +12,5 @@
     node app.js ./entrada.txt
 
 ## Team
-  [Mário Diniz](https://github.com/mariohd)
-  [Jonas Luz](https://github.com/jonasluz)
+  * [Jonas Luz](https://github.com/jonasluz)
+  * [Mário Diniz](https://github.com/mariohd)
