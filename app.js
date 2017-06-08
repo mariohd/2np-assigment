@@ -1,5 +1,6 @@
 var fs = require("fs");
 var colors = require('colors');
+var Matrix = require('node-matrix');
 
 let getFileLocation = () => {
 	if (process.argv.length <= 2) {
@@ -58,6 +59,7 @@ let printGraphicalInstance = (instance) => {
 
 let solveInstances = (instances) => {
 	instances.forEach((instance) => {
+		/*
 		console.log(`INSTANCE ${instance.index} - STARTED`.green);
 		console.log(`INSTANCE ${instance.index} - PROBLEM`.green);
 		printGraphicalInstance(instance);
@@ -65,10 +67,10 @@ let solveInstances = (instances) => {
 		let greedySolution = greedyActivitySelector(instance);
 		console.log(`INSTANCE ${instance.index} - GREEDY SOLUTION`.green);
 		printGraphicalInstance(greedySolution);
-
-		//let dynamicSolution = dynamicActivitySelector(instance);
+		*/
+		let dynamicSolution = dynamicActivitySelector(instance);
 		console.log(`INSTANCE ${instance.index} - DYNAMIC SOLUTION`.green);
-		console.log('#TO DO\n'.underline.bold.red);
+		console.log(dynamicSolution);
 		//printGraphicalInstance(dynamicSolution);
 
 		console.log(`INSTANCE ${instance.index} - ENDED \n`.green);
@@ -93,7 +95,33 @@ let greedyActivitySelector = (instance) => {
 };
 
 let dynamicActivitySelector = (instance) => {
-	return {};
+	let matrixChainOrder = (activities) => {
+		activities.unshift({start: Number.NEGATIVE_INFINITY, end: Number.NEGATIVE_INFINITY});
+		activities.push({start: Number.POSITIVE_INFINITY, end: Number.POSITIVE_INFINITY});
+
+		let n = activities.length;
+		let c = Matrix({ rows: n, columns: n, values: 0 });
+		let s = Matrix({ rows: n, columns: n, values: 0 });
+
+		for (let L = 3; L <= n ; L ++) {
+			for (let i = 0; i <= (n - L); i ++) {
+				let j = i + L - 1;
+				for (let k = i + 1; k <= j - 1; k++) {
+					if (activities[k].start >= activities[i].end && activities[k].end <= activities[j].start) {
+						let q = c[i][k] + c[k][j] + 1; 
+						if (q > c[i][j]) {
+							c[i][j] = q;
+							s[i][j] = k;
+						}
+					}
+				}
+			}
+		}
+
+		return {c , s};
+	}
+
+	return matrixChainOrder(instance.activities.slice());
 } 
 
 let startProcess = () => {
