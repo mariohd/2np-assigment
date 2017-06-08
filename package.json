@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/mariohd/2np-assigment/issues"
   },
-  "homepage": "https://github.com/mariohd/2np-assigment#readme"
+  "homepage": "https://github.com/mariohd/2np-assigment#readme",
+  "dependencies": {
+    "colors": "^1.1.2"
+  }
 }

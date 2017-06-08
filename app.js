@@ -1,4 +1,5 @@
 var fs = require("fs");
+var colors = require('colors');
 
 let getFileLocation = () => {
 	if (process.argv.length <= 2) {
@@ -17,7 +18,7 @@ let createInstance = (problem, index) => {
 		activity.toString = () => `${name} - (${start}, ${end})`;
 		return activity;
 	};
-	let instance = { index, activities: [] };
+	let instance = { index: index + 1, activities: [] };
 	let numbers = problem.split(' ').map(Number);
 	let size = numbers.shift();
 
@@ -30,53 +31,71 @@ let createInstance = (problem, index) => {
 	return instance;
 };
 
-let printGraphicalInstances = (instances) => {
+let printGraphicalInstance = (instance) => {
 
 	let addBorders = (line) => line.replace(/--/, ' |').substring(0, line.length-2) + '|';
-
-	instances.forEach((instance) => {
-		console.log(`Instance: ${instance.index}`);
-		let size = Math.max.apply(Math, instance.activities.map((i) => i.end));
-		let strings = instance.activities.map((activity) => {
-			let emptySpaces = '   '.repeat(activity.start);
-			let ocurring = emptySpaces + '---'.repeat(activity.end - activity.start + 1);
-			let ended =  addBorders(ocurring) + '   '.repeat(size - activity.end);
-			let subtitles = ended + `   ${ activity.toString() } `;
-			return subtitles;
-		});
+	let printRule = () => {
 		let rule = '';
 		for (let i = 0; i < size + 1; i ++ ) {
 			rule += ` ${ i.toString(32).toUpperCase()} `;
 		}
+		console.log(rule);
+	}
 
-		strings.push(rule);
-		strings.unshift(rule);
-		strings.forEach((s) => console.log(s));
-		console.log('');
+	console.log(`Instance: ${instance.index}`.bold);
+	let size = Math.max.apply(Math, instance.activities.map((i) => i.end));
+	printRule();
+	instance.activities.forEach((activity) => {
+		let emptySpaces = '   '.repeat(activity.start);
+		let ocurring = emptySpaces + '---'.repeat(activity.end - activity.start + 1);
+		let ended =  addBorders(ocurring) + '   '.repeat(size - activity.end);
+		let subtitles = ended + `   ${ activity.toString()}`;
+		console.log(subtitles);
 	});
+	printRule();
+	console.log('');
 };
 
-let greedyActivitySelector = (instances) => {
-	console.log('Greedy Activity Selector \n'.toUpperCase());
-	let instanceAnalysis = (instance) => {
-		let activities = instance.activities.slice();
-		let A = [activities.shift()];
-		let i = A[0];
+let solveInstances = (instances) => {
+	instances.forEach((instance) => {
+		console.log(`INSTANCE ${instance.index} - STARTED`.green);
+		console.log(`INSTANCE ${instance.index} - PROBLEM`.green);
+		printGraphicalInstance(instance);
 
-		for (activity of activities) {
-			if (i.end <= activity.start) {
-				A.push(activity);
-				i = activity;
-			}
+		let greedySolution = greedyActivitySelector(instance);
+		console.log(`INSTANCE ${instance.index} - GREEDY SOLUTION`.green);
+		printGraphicalInstance(greedySolution);
+
+		//let dynamicSolution = dynamicActivitySelector(instance);
+		console.log(`INSTANCE ${instance.index} - DYNAMIC SOLUTION`.green);
+		console.log('#TO DO\n'.underline.bold.red);
+		//printGraphicalInstance(dynamicSolution);
+
+		console.log(`INSTANCE ${instance.index} - ENDED \n`.green);
+	});
+}
+
+let greedyActivitySelector = (instance) => {
+	console.log('Greedy Activity Selector'.toUpperCase().bold.red);
+	let activities = instance.activities.slice();
+	let A = [activities.shift()];
+	let i = A[0];
+
+	for (activity of activities) {
+		if (i.end <= activity.start) {
+			let copy = Object.assign({}, activity);
+			copy.selected = true;
+			A.push(copy);
+			i = copy;
 		}
-		console.log(A.map((a) => a.name ));
-		console.log(`INSTANCE ${instance.index} ENDED`);
-		console.log('');
-		return A;
-	};
-
-	return instances.map(instanceAnalysis);
+	}
+	console.log(A.map((a) => a.name ) + '\n');
+	return { activities: A, index: instance.index };
 };
+
+let dynamicActivitySelector = (instance) => {
+	return {};
+} 
 
 let startProcess = () => {
 	let fileLocation = getFileLocation();
@@ -84,9 +103,8 @@ let startProcess = () => {
 	let lines = fileContent.split('\n');
 	let instancesToSolve = parseInt(lines.shift());
 	let instances = lines.map(createInstance);
-	greedyActivitySelector(instances);
-	printGraphicalInstances(instances);
+	solveInstances(instances);
 };
 
 startProcess();
-console.log("Complete");
+console.log("COMPLETE".underline.green);
