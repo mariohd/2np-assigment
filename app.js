@@ -18,7 +18,7 @@ let createInstance = (problem, index) => {
 		return activity;
 	};
 	let instance = { index, activities: [] };
-	let numbers = problem.split(' ');
+	let numbers = problem.split(' ').map(Number);
 	let size = numbers.shift();
 
 	for (let i = 0; i < size * 2; i += 2) {
@@ -56,12 +56,35 @@ let printGraphicalInstances = (instances) => {
 	});
 };
 
+let greedyActivitySelector = (instances) => {
+	console.log('Greedy Activity Selector \n'.toUpperCase());
+	let instanceAnalysis = (instance) => {
+		let copied = Object.assign({}, instance);
+		let A = [copied.activities[0]];
+		let i = A[0];
+
+		for (activity of copied.activities) {
+			if (i.end <= activity.start) {
+				A.push(activity);
+				i = activity;
+			}
+		}
+		console.log(A.map((a) => a.name ));
+		console.log(`INSTANCE ${copied.index} ENDED`);
+		console.log('');
+		return A;
+	};
+
+	return instances.map(instanceAnalysis);
+};
+
 let startProcess = () => {
 	let fileLocation = getFileLocation();
 	let fileContent = readFileContent(fileLocation);
 	let lines = fileContent.split('\n');
 	let instancesToSolve = parseInt(lines.shift());
 	let instances = lines.map(createInstance);
+	greedyActivitySelector(instances);
 	printGraphicalInstances(instances);
 };
 
