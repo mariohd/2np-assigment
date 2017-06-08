@@ -13,5 +13,4 @@
 
 ## Team
   [Mário Diniz](https://github.com/mariohd)
-  
   [Jonas Luz](https://github.com/jonasluz)
