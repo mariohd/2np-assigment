@@ -59,18 +59,18 @@ let printGraphicalInstances = (instances) => {
 let greedyActivitySelector = (instances) => {
 	console.log('Greedy Activity Selector \n'.toUpperCase());
 	let instanceAnalysis = (instance) => {
-		let copied = Object.assign({}, instance);
-		let A = [copied.activities[0]];
+		let activities = instance.activities.slice();
+		let A = [activities.shift()];
 		let i = A[0];
 
-		for (activity of copied.activities) {
+		for (activity of activities) {
 			if (i.end <= activity.start) {
 				A.push(activity);
 				i = activity;
 			}
 		}
 		console.log(A.map((a) => a.name ));
-		console.log(`INSTANCE ${copied.index} ENDED`);
+		console.log(`INSTANCE ${instance.index} ENDED`);
 		console.log('');
 		return A;
 	};
