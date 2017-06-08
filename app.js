@@ -84,7 +84,6 @@ let greedyActivitySelector = (instance) => {
 	for (activity of activities) {
 		if (i.end <= activity.start) {
 			let copy = Object.assign({}, activity);
-			copy.selected = true;
 			A.push(copy);
 			i = copy;
 		}
