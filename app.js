@@ -156,7 +156,7 @@ let dynamicActivitySelector = (instance) => {
 						let q = c[i][k] + c[k][j] + 1;	// calcula a qtd de ativ. compatíveis que incluem k 
 						if (q > c[i][j]) {				// se a qtd para k for a maior até agora para o intervalo...
 							c[i][j] = q;				// atualiza o valor max. de atividades compatíveis no intervalo.
-							s[i][j] = k;				// registra a atividade k selecionada.
+							c[j][i] = k;				// registra a atividade k selecionada.
 						}
 					}
 				}
@@ -171,7 +171,7 @@ let dynamicActivitySelector = (instance) => {
 		 */
 		let getActivities = (matrix, i = 0, activities = []) => {
 			// recupera a atividade da última coluna, linha i.
-			let activity = matrix[i][matrix.numCols - 1];
+			let activity = matrix[matrix.numCols - 1][i];
 			
 			if (activity == 0) { 	// atividade idx 0 atingida...
 				return activities;	// fim da recursão.
@@ -183,7 +183,7 @@ let dynamicActivitySelector = (instance) => {
 		}
 
 		// Seleciona as atividades da solução a partir da coluna s.
-		let selectedActivities = getActivities(s);
+		let selectedActivities = getActivities(c);
 
 		// retorno: as atividades selecionadas e as matrizes de trabalho, para demonstração.
 		return {
