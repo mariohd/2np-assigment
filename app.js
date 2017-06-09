@@ -26,6 +26,11 @@ let getFileLocation = () => {
 /** Lê o conteúdo do arquivo de entrada. */
 let readFileContent = (location) => fs.readFileSync(location, 'utf8');
 
+/**
+ * Gera a instância de atividades.
+ * @param {*} problem 
+ * @param {*} index 
+ */
 let createInstance = (problem, index) => {
 	let createActivity = (index, start, end) => {
 		let activity = {index, name: `A${index}`, start, end};
@@ -46,8 +51,8 @@ let createInstance = (problem, index) => {
 };
 
 /**
- * Imprime a instância da atividade.
- * @param {*} instance a imprimir.
+ * Imprime a instância de atividades.
+ * @param {*} instance de problema a imprimir.
  */
 let printGraphicalInstance = (instance) => {
 
@@ -104,47 +109,66 @@ let solveInstances = (instances) => {
 	});
 }
 
-/** Versão gulosa da solução. */
+/**
+ * Versão gulosa da solução.
+ * @param {*} instance instância de problema.
+ */
 let greedyActivitySelector = (instance) => {
-	let activities = instance.activities.slice();
-	let A = [activities.shift()];
-	let i = A[0];
+	let activities = instance.activities.slice();	// gera vetor.
+	let A = [activities.shift()];					// inicia seleção pela atividade 1.
+	let i = A[0];									// atividade anterior (a comparar).
 
-	for (activity of activities) {
-		if (i.end <= activity.start) {
-			let copy = Object.assign({}, activity);
+	for (activity of activities) {					// para cada atividade remanescente...
+		if (i.end <= activity.start) {				// se não conflitar com a anterior...
+			let copy = Object.assign({}, activity);	// a coloca no resultado...
 			A.push(copy);
-			i = copy;
+			i = copy;								// e a define como anterior.
 		}
 	}
 	return { activities: A, index: instance.index };
 };
 
-/** Versão em programação dinâmica da solução. */
+/**
+ * Versão em programação dinâmica da solução.
+ * @param {*} instance instância do problema.
+ */
 let dynamicActivitySelector = (instance) => {
+
+	/**
+	 * Gera as matrizes de encadeamento das atividades, c e s.
+	 * @param {*} activities 
+	 */
 	let matrixChainOrder = (activities) => {
+		// Adiciona as atividades artificiais A(0) e A(n+1).
 		activities.unshift({start: Number.NEGATIVE_INFINITY, end: Number.NEGATIVE_INFINITY});
 		activities.push({start: Number.POSITIVE_INFINITY, end: Number.POSITIVE_INFINITY});
 
-		let n = activities.length;
-		let c = Matrix({ rows: n, columns: n, values: 0 });
-		let s = Matrix({ rows: n, columns: n, values: 0 });
+		let n = activities.length;							// quantidade de atividades.
+		let c = Matrix({ rows: n, columns: n, values: 0 });	// max de atividades compatíveis.
+		let s = Matrix({ rows: n, columns: n, values: 0 }); // atividades selecionadas no max.
 
-		for (let L = 3; L <= n ; L ++) {
-			for (let i = 0; i <= (n - L); i ++) {
-				let j = i + L - 1;
-				for (let k = i + 1; k <= j - 1; k++) {
-					if (activities[k].start >= activities[i].end && activities[k].end <= activities[j].start) {
-						let q = c[i][k] + c[k][j] + 1; 
-						if (q > c[i][j]) {
-							c[i][j] = q;
-							s[i][j] = k;
+		for (let L = 3; L <= n ; L ++) {			// intervalo tratado (entre i e j).
+			for (let i = 0; i <= (n - L); i ++) {	// idx atividade anterior do intervalo.
+				let j = i + L - 1;					// idx atividade posterior do intervalo.
+				for (let k = i + 1; k <= j - 1; k++) { // idx ativ. candidata no intervalo.
+					if (activities[k].start >= activities[i].end 		
+					    && activities[k].end <= activities[j].start) { // se ativ. candidata é compatível...
+						let q = c[i][k] + c[k][j] + 1;	// calcula a qtd de ativ. compatíveis que incluem k 
+						if (q > c[i][j]) {				// se a qtd para k for a maior até agora para o intervalo...
+							c[i][j] = q;				// atualiza o valor max. de atividades compatíveis no intervalo.
+							s[i][j] = k;				// registra a atividade k selecionada.
 						}
 					}
 				}
 			}
 		}
 
+		/**
+		 * Seleção recursiva das atividades.
+		 * @param {*} matrix 		matriz de seleção das atividades.
+		 * @param {*} i 			índice atual.
+		 * @param {*} activities 	atividades selecionadas.
+		 */
 		let getActivities = (matrix, i = 0, activities = []) => {
 			let activity = matrix[i][matrix.numCols - 1];
 
@@ -155,6 +179,7 @@ let dynamicActivitySelector = (instance) => {
 			activities.push(activity);
 			return getActivities(matrix, activity, activities);
 		}
+
 		let selectedActivities = getActivities(s);
 		return {
 			activities: activities.filter((a) => { 
