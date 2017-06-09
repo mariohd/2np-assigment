@@ -170,7 +170,7 @@ let dynamicActivitySelector = (instance) => {
 		 */
 		let getActivities = (matrix, i = 0, activities = []) => {
 			// recupera a atividade da última coluna, linha i.
-			let activity = matrix[matrix.numCols - 1][i];
+			let activity = matrix[matrix.numRows - 1][i];
 			
 			if (activity == 0) { 	// atividade idx 0 atingida...
 				return activities;	// fim da recursão.
