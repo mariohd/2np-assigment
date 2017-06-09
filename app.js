@@ -144,7 +144,6 @@ let dynamicActivitySelector = (instance) => {
 
 		let n = activities.length;							// quantidade de atividades.
 		let c = Matrix({ rows: n, columns: n, values: 0 });	// max de atividades compatíveis.
-		let s = Matrix({ rows: n, columns: n, values: 0 }); // atividades selecionadas no max.
 
 		for (let L = 3; L <= n ; L ++) {			// intervalo tratado (entre i e j).
 			for (let i = 0; i <= (n - L); i ++) {	// idx atividade anterior do intervalo.
