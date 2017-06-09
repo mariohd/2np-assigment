@@ -98,8 +98,7 @@ let solveInstances = (instances) => {
 		console.log('Dynamic Activity Selector'.toUpperCase().bold.red);
 		let dynamicSolution = dynamicActivitySelector(instance);
 		console.log(`INSTANCE ${instance.index} - DYNAMIC SOLUTION`.green);
-		console.log("C:", dynamicSolution.c);
-		console.log("S:", dynamicSolution.s);
+		console.log("C-S:", dynamicSolution.c);
 		printGraphicalInstance({ 
 			index: instance.index, 
 			activities: dynamicSolution.activities 
@@ -194,8 +193,7 @@ let dynamicActivitySelector = (instance) => {
 					return false;
 				}
 			}),
-			c,
-			s
+			c
 		};
 	}
 
