@@ -1,7 +1,19 @@
+/**
+ * Universidade de Fortaleza - UNIFOR.
+ * Mestrado em Informática Aplicada - MIA.
+ * Construção e Análise de Algoritmos - Prof. Napoleão. 
+ * Projeto final - Seletor de atividades. 
+ * Equipe: Mário Diniz e Jonas Luz.
+ * Junho, 2017.
+ * 
+ */
+
+/** Bibliotecas requeridas. */
 var fs = require("fs");
 var colors = require('colors');
 var Matrix = require('node-matrix');
 
+/** Recupera o nome do arquivo de entrada. */
 let getFileLocation = () => {
 	if (process.argv.length <= 2) {
 		console.log("Usage: " + __filename + " SOME_TEXT_FILE");
@@ -11,6 +23,7 @@ let getFileLocation = () => {
 	return process.argv[2];
 };
 
+/** Lê o conteúdo do arquivo de entrada. */
 let readFileContent = (location) => fs.readFileSync(location, 'utf8');
 
 let createInstance = (problem, index) => {
@@ -32,6 +45,10 @@ let createInstance = (problem, index) => {
 	return instance;
 };
 
+/**
+ * Imprime a instância da atividade.
+ * @param {*} instance a imprimir.
+ */
 let printGraphicalInstance = (instance) => {
 
 	let addBorders = (line) => line.replace(/--/, ' |').substring(0, line.length-2) + '|';
@@ -57,6 +74,10 @@ let printGraphicalInstance = (instance) => {
 	console.log('');
 };
 
+/**
+ * Resolve o problema de seleção de atividades.
+ * @param {*} instances Lista de instâncias de atividades.
+ */
 let solveInstances = (instances) => {
 	instances.forEach((instance) => {
 		
@@ -83,6 +104,7 @@ let solveInstances = (instances) => {
 	});
 }
 
+/** Versão gulosa da solução. */
 let greedyActivitySelector = (instance) => {
 	let activities = instance.activities.slice();
 	let A = [activities.shift()];
@@ -98,6 +120,7 @@ let greedyActivitySelector = (instance) => {
 	return { activities: A, index: instance.index };
 };
 
+/** Versão em programação dinâmica da solução. */
 let dynamicActivitySelector = (instance) => {
 	let matrixChainOrder = (activities) => {
 		activities.unshift({start: Number.NEGATIVE_INFINITY, end: Number.NEGATIVE_INFINITY});
@@ -149,6 +172,7 @@ let dynamicActivitySelector = (instance) => {
 	return matrixChainOrder(instance.activities.slice());
 } 
 
+/** Rotina principal. */
 let startProcess = () => {
 	let fileLocation = getFileLocation();
 	let fileContent = readFileContent(fileLocation);
