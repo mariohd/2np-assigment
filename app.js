@@ -14,9 +14,9 @@ let getFileLocation = () => {
 let readFileContent = (location) => fs.readFileSync(location, 'utf8');
 
 let createInstance = (problem, index) => {
-	let createActivity = (name, start, end) => {
-		let activity = {name, start, end};
-		activity.toString = () => `${name} - (${start}, ${end})`;
+	let createActivity = (index, start, end) => {
+		let activity = {index, name: `A${index}`, start, end};
+		activity.toString = () => `A${index} - (${start}, ${end})`;
 		return activity;
 	};
 	let instance = { index: index + 1, activities: [] };
@@ -25,7 +25,7 @@ let createInstance = (problem, index) => {
 
 	for (let i = 0; i < size * 2; i += 2) {
 		instance.activities.push(
-			createActivity(`A${ (i/2) + 1 }`, numbers[i], numbers[i+1])
+			createActivity((i/2) + 1, numbers[i], numbers[i+1])
 		);
 	}
 
@@ -43,7 +43,7 @@ let printGraphicalInstance = (instance) => {
 		console.log(rule);
 	}
 
-	console.log(`Instance: ${instance.index}`.bold);
+	console.log(`Instance: ${instance.index} : ${ 	instance.activities.map((a) => a.name ) }`.bold);
 	let size = Math.max.apply(Math, instance.activities.map((i) => i.end));
 	printRule();
 	instance.activities.forEach((activity) => {
@@ -59,26 +59,31 @@ let printGraphicalInstance = (instance) => {
 
 let solveInstances = (instances) => {
 	instances.forEach((instance) => {
-		/*
+		
 		console.log(`INSTANCE ${instance.index} - STARTED`.green);
 		console.log(`INSTANCE ${instance.index} - PROBLEM`.green);
 		printGraphicalInstance(instance);
 
+		console.log('Greedy Activity Selector'.toUpperCase().bold.red);
 		let greedySolution = greedyActivitySelector(instance);
 		console.log(`INSTANCE ${instance.index} - GREEDY SOLUTION`.green);
 		printGraphicalInstance(greedySolution);
-		*/
+		
+		console.log('Dynamic Activity Selector'.toUpperCase().bold.red);
 		let dynamicSolution = dynamicActivitySelector(instance);
 		console.log(`INSTANCE ${instance.index} - DYNAMIC SOLUTION`.green);
-		console.log(dynamicSolution);
-		//printGraphicalInstance(dynamicSolution);
+		console.log("C:", dynamicSolution.c);
+		console.log("S:", dynamicSolution.s);
+		printGraphicalInstance({ 
+			index: instance.index, 
+			activities: dynamicSolution.activities 
+		});
 
 		console.log(`INSTANCE ${instance.index} - ENDED \n`.green);
 	});
 }
 
 let greedyActivitySelector = (instance) => {
-	console.log('Greedy Activity Selector'.toUpperCase().bold.red);
 	let activities = instance.activities.slice();
 	let A = [activities.shift()];
 	let i = A[0];
@@ -90,7 +95,6 @@ let greedyActivitySelector = (instance) => {
 			i = copy;
 		}
 	}
-	console.log(A.map((a) => a.name ) + '\n');
 	return { activities: A, index: instance.index };
 };
 
@@ -118,7 +122,28 @@ let dynamicActivitySelector = (instance) => {
 			}
 		}
 
-		return {c , s};
+		let getActivities = (matrix, i = 0, activities = []) => {
+			let activity = matrix[i][matrix.numCols - 1];
+
+			if (activity == 0) {
+				return activities;
+			}
+
+			activities.push(activity);
+			return getActivities(matrix, activity, activities);
+		}
+		let selectedActivities = getActivities(s);
+		return {
+			activities: activities.filter((a) => { 
+				if (a.index) {
+					return selectedActivities.includes(a.index); 
+				} else {
+					return false;
+				}
+			}),
+			c,
+			s
+		};
 	}
 
 	return matrixChainOrder(instance.activities.slice());
