@@ -26,6 +26,17 @@ let getFileLocation = () => {
 /** Lê o conteúdo do arquivo de entrada. */
 let readFileContent = (location) => fs.readFileSync(location, 'utf8');
 
+/** Guarda o resultado no arquivo de saída. */
+let writeOutput = (result) => {
+	const filename = process.argv.length < 4 ? 'saida.txt' : process.argv[3];
+	let output = '';
+	for (let s of result) {
+		output += `${s.length} ${s.map((si) => si.index).join(' ')}\n`;
+	}
+	fs.writeFileSync(filename, output, 'utf-8');
+	console.log(`File ${filename} written.`);
+}
+
 /**
  * Gera a instância de atividades.
  * @param {*} problem 
@@ -84,6 +95,7 @@ let printGraphicalInstance = (instance) => {
  * @param {*} instances Lista de instâncias de atividades.
  */
 let solveInstances = (instances) => {
+	let result = new Array();
 	instances.forEach((instance) => {
 		
 		console.log(`INSTANCE ${instance.index} - STARTED`.green);
@@ -105,7 +117,11 @@ let solveInstances = (instances) => {
 		});
 
 		console.log(`INSTANCE ${instance.index} - ENDED \n`.green);
+
+		result.push(dynamicSolution.activities);
 	});
+
+	return result;
 }
 
 /**
@@ -134,10 +150,11 @@ let greedyActivitySelector = (instance) => {
 let dynamicActivitySelector = (instance) => {
 
 	/**
-	 * Gera as matrizes de encadeamento das atividades, c e s.
-	 * @param {*} activities 
+	 * Gera a matriz de encadeamento das atividades, c
+	 * @param {*} activities as atividades a encadear.
 	 */
 	let matrixChainOrder = (activities) => {
+
 		// Adiciona as atividades artificiais A(0) e A(n+1).
 		activities.unshift({start: Number.NEGATIVE_INFINITY, end: Number.NEGATIVE_INFINITY});
 		activities.push({start: Number.POSITIVE_INFINITY, end: Number.POSITIVE_INFINITY});
@@ -180,10 +197,10 @@ let dynamicActivitySelector = (instance) => {
 			return getActivities(matrix, activity, activities);
 		}
 
-		// Seleciona as atividades da solução a partir da coluna s.
+		// Seleciona as atividades da solução a partir da matriz c.
 		let selectedActivities = getActivities(c);
 
-		// retorno: as atividades selecionadas e as matrizes de trabalho, para demonstração.
+		// retorno: as atividades selecionadas e a matriz de trabalho, para demonstração.
 		return {
 			activities: activities.filter((a) => { 
 				if (a.index) {
@@ -206,7 +223,8 @@ let startProcess = () => {
 	let lines = fileContent.split('\n');
 	let instancesToSolve = parseInt(lines.shift());
 	let instances = lines.map(createInstance);
-	solveInstances(instances);
+	let result = solveInstances(instances);
+	writeOutput(result);
 };
 
 startProcess();
