@@ -8,6 +8,8 @@
  * 
  */
 
+ "use strict";
+
 /** Bibliotecas requeridas. */
 var fs = require("fs");
 var colors = require('colors');
@@ -34,7 +36,7 @@ let writeOutput = (result) => {
 		output += `${s.length} ${s.map((si) => si.index).join(' ')}\n`;
 	}
 	fs.writeFileSync(filename, output, 'utf-8');
-	console.log(`File ${filename} written.`);
+	console.log(`File ${filename} written.`.toUpperCase().green);
 }
 
 /**
@@ -133,7 +135,7 @@ let greedyActivitySelector = (instance) => {
 	let A = [activities.shift()];					// inicia seleção pela atividade 1.
 	let i = A[0];									// atividade anterior (a comparar).
 
-	for (activity of activities) {					// para cada atividade remanescente...
+	for (let activity of activities) {				// para cada atividade remanescente...
 		if (i.end <= activity.start) {				// se não conflitar com a anterior...
 			let copy = Object.assign({}, activity);	// a coloca no resultado...
 			A.push(copy);
