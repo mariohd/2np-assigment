@@ -112,7 +112,7 @@ let solveInstances = (instances) => {
 		console.log('Dynamic Activity Selector'.toUpperCase().bold.red);
 		let dynamicSolution = dynamicActivitySelector(instance);
 		console.log(`INSTANCE ${instance.index} - DYNAMIC SOLUTION`.green);
-		console.log("C-S:", dynamicSolution.c);
+		console.log("C+T(S):", dynamicSolution.c);
 		printGraphicalInstance({ 
 			index: instance.index, 
 			activities: dynamicSolution.activities 
@@ -131,14 +131,14 @@ let solveInstances = (instances) => {
  * @param {*} instance instância de problema.
  */
 let greedyActivitySelector = (instance) => {
-	let activities = instance.activities.slice();	// gera vetor.
-	let A = [activities.shift()];					// inicia seleção pela atividade 1.
+	let activities = instance.activities.slice();	// faz uma cópia do vetor de atividades
+	let A = [activities.shift()];					// inicia seleção pela atividade 1 e retira ela do vetor de atividades.
 	let i = A[0];									// atividade anterior (a comparar).
 
 	for (let activity of activities) {				// para cada atividade remanescente...
 		if (i.end <= activity.start) {				// se não conflitar com a anterior...
-			let copy = Object.assign({}, activity);	// a coloca no resultado...
-			A.push(copy);
+			let copy = Object.assign({}, activity);	// faz uma cópia da ativadade...
+			A.push(copy);							// a coloca no resultado...
 			i = copy;								// e a define como anterior.
 		}
 	}
@@ -157,14 +157,14 @@ let dynamicActivitySelector = (instance) => {
 	 */
 	let matrixChainOrder = (activities) => {
 
-		// Adiciona as atividades artificiais A(0) e A(n+1).
+		// Adiciona as atividades artificiais em A(0) e A(n+1).
 		activities.unshift({start: Number.NEGATIVE_INFINITY, end: Number.NEGATIVE_INFINITY});
 		activities.push({start: Number.POSITIVE_INFINITY, end: Number.POSITIVE_INFINITY});
 
 		let n = activities.length;							// quantidade de atividades.
 		let c = Matrix({ rows: n, columns: n, values: 0 });	// max de atividades compatíveis.
 
-		for (let L = 3; L <= n ; L ++) {			// intervalo tratado (entre i e j).
+		for (let L = 3; L <= n ; L ++) {			// intervalo tratado (entre i e j) (iniciando de 3 pois atividades menores não possuem ninguém no intervalo).
 			for (let i = 0; i <= (n - L); i ++) {	// idx atividade anterior do intervalo.
 				let j = i + L - 1;					// idx atividade posterior do intervalo.
 				for (let k = i + 1; k <= j - 1; k++) { // idx ativ. candidata no intervalo.
@@ -187,7 +187,7 @@ let dynamicActivitySelector = (instance) => {
 		 * @param {*} activities 	atividades selecionadas.
 		 */
 		let getActivities = (matrix, i = 0, activities = []) => {
-			// recupera a atividade da última coluna, linha i.
+			// recupera a atividade da última linha, linha i.
 			let activity = matrix[matrix.numRows - 1][i];
 			
 			if (activity == 0) { 	// atividade idx 0 atingida...
